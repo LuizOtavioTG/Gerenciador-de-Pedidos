@@ -12,7 +12,7 @@ public class Pedido {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private LocalDate data;
-    @ManyToMany()
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "pedido_produtos",
             joinColumns = @JoinColumn(name = "pedido_id"),
@@ -51,5 +51,13 @@ public class Pedido {
     }
     public List<Produto> getProdutos() {
         return produtos;
+    }
+
+    @Override
+    public String toString() {
+        return "Pedido{" +
+                "id=" + id +
+                ", data=" + data +
+                '}';
     }
 }

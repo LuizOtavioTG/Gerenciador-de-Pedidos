@@ -12,7 +12,7 @@ public class Categoria {
     private Long id;
     @Column(nullable = false, unique = true)
     private String nome;
-    @OneToMany (mappedBy = "categoria", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToMany (mappedBy = "categoria", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
     private List<Produto> produtos = new ArrayList<>();
 
     public void adicionarProduto (Produto produto){

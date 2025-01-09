@@ -15,14 +15,14 @@ public class Produto {
     @Column(name = "valor", nullable = false)
     private Double preco;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 
-    @ManyToMany(mappedBy = "produtos", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "produtos", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Pedido> pedidos = new ArrayList<>();
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fornecedor_id")
     private Fornecedor fornecedor;
 
@@ -97,5 +97,17 @@ public class Produto {
     }
     public Fornecedor getFornecedor() {
         return fornecedor;
+    }
+
+    @Override
+    public String toString() {
+        return "Produto{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                ", preco=" + preco +
+                ", categoria=" + categoria.getNome() +
+                ", pedidos=" + pedidos +
+                ", fornecedor=" + fornecedor.getNome() +
+                '}';
     }
 }
