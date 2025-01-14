@@ -1,19 +1,15 @@
 package com.example.gerenciadorDePedidos.principal;
 
-import com.example.gerenciadorDePedidos.model.Categoria;
-import com.example.gerenciadorDePedidos.model.Fornecedor;
 import com.example.gerenciadorDePedidos.model.Pedido;
 import com.example.gerenciadorDePedidos.model.Produto;
 import com.example.gerenciadorDePedidos.repository.CategoriaRepository;
 import com.example.gerenciadorDePedidos.repository.FornecedorRepository;
 import com.example.gerenciadorDePedidos.repository.PedidoRepository;
 import com.example.gerenciadorDePedidos.repository.ProdutoRepository;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -32,9 +28,10 @@ public class Principal {
     @Autowired
     private FornecedorRepository fornecedorRepository;
 
-    private Scanner scan = new Scanner(System.in);
-    // Método para salvar dados
+    private final Scanner scan = new Scanner(System.in);
+
     public void executar() {
+        //métodos utilizando derived queries
         buscarProdutosPeloNome();
         buscarProdutosPorCategoria();
         buscarProdutosValorMaiorIndicado();
@@ -53,49 +50,26 @@ public class Principal {
         buscarTop3ProdutosCaros();
         buscarTop5ProdutosBaratosDeUmaCategoria();
 
+        //métodos utilizando JPQL
+        buscarProdutosComValorMaior();
+        buscarProdutosOdernadorPorPrecoCrescente();
+        buscarProdutosOdernadorPorPrecoDecrescente();
+        buscarProdutosQueComecemComLetraEspecifica();
+        buscarPedidosFeitosEntreDuasDatas();
+        buscarMediaPrecosProdutos();
+        buscarPrecoMaximoDeUmProdutoEmUmaCategoria();
+        buscarNumeroDeProdutosPorCategoria();
+        buscarCategoriasComMais10Produtos();
+        buscarProdutosFiltradosPorNomeOuCategoria();
+
+        //métodos com queries nativas
+        buscarTop5ProdutosMaisCaros();
 
 
 
-//        int opcao;
-//        do {
-//            var menu = """
-//                    1 - Criar produtos
-//
-//                    0 - Sair
-//                    """;
-//
-//            System.out.println(menu);
-//            opcao = scan.nextInt();
-//            scan.nextLine();
-//
-//            switch (opcao) {
-//                case 1:
-//                    criarProduto();
-//                    System.out.println("\n");
-//                    break;
-//                case 2:
-//                    criarPedido();
-//                    System.out.println("\n");
-//                    break;
-//                case 3:
-//                    criarFornecedor();
-//                    System.out.println("\n");
-//                    break;
-//                case 4:
-//                    criarCategoria();
-//                    System.out.println("\n");
-//                    break;
-//                case 5:
-//                    buscarProdutosPeloNome();
-//                case 0:
-//                    System.out.println("Saindo...");
-//                    System.out.println("\n");
-//                    break;
-//                default:
-//                    System.out.println("Opção inválida");
-//                    System.out.println("\n");
-//            }
-//        }while (opcao !=0);
+
+
+
 
 //        // Criando categorias
 //        Categoria categoriaEletronicos = new Categoria("Eletrônicos");
@@ -134,40 +108,11 @@ public class Principal {
 //        pedidoRepository.saveAll(List.of(pedido1, pedido2));
 
 
-//        // Testando consultas e verificando os relacionamentos
-//        System.out.println("Produtos na categoria Eletrônicos:");
-//        categoriaRepository.findById(1L).ifPresent(categoria ->
-//                categoria.getProdutoList().forEach(produto ->
-//                        System.out.println(" - " + produto.getNome())
-//                )
-//        );
-//
-//        System.out.println("\nPedidos e seus produtos:");
-//        pedidoRepository.findAll().forEach(pedido -> {
-//            System.out.println("Pedido " + pedido.getId() + ":");
-//            pedido.getProdutos().forEach(produto ->
-//                    System.out.println(" - " + produto.getNome())
-//            );
-//        });
-//
-//        System.out.println("\nProdutos e seus fornecedores:");
-//        produtoRepository.findAll().forEach(produto ->
-//                System.out.println("Produto: " + produto.getNome() +
-//                        ", Fornecedor: " + produto.getFornecedor().getNome())
-//        );
-    }
-
-    private void criarPedido() {
-    }
-    private void criarProduto() {
 
     }
-    private void criarFornecedor() {
 
-    }
-    private void criarCategoria() {
 
-    }
+
     private void buscarProdutosPeloNome (){
         System.out.println("Digite o nome exato do produto que você busca: ");
         String nome = scan.nextLine();
@@ -291,4 +236,105 @@ public class Principal {
         System.out.println("Top 5 produtos mais baratos da categoria " + categoria + ": ");
         produtos.forEach(System.out::println);
     }
+    private  void  buscarProdutosComValorMaior() {
+        System.out.println("Digite o valor: ");
+        Double valor = scan.nextDouble();
+        scan.nextLine();
+        List<Produto> produtos = produtoRepository.EncontrarprodutosComValorMaior(valor);
+        produtos.forEach(System.out::println);
+    }
+    private void buscarProdutosOdernadorPorPrecoCrescente() {
+        List<Produto> produtos = produtoRepository.ordenarProdutosPorPrecoCrescente();
+        produtos.forEach(System.out::println);
+    }
+    private void buscarProdutosOdernadorPorPrecoDecrescente() {
+        List<Produto> produtos = produtoRepository.ordenarProdutosPorPrecoDecrescente();
+        produtos.forEach(System.out::println);
+    }
+
+    private void buscarProdutosQueComecemComLetraEspecifica() {
+        System.out.println("Digite a letra: ");
+        String entrada = scan.nextLine();
+        char letra = entrada.charAt(0);
+
+        List<Produto> produtos = produtoRepository.consultarProdutosQueComecemComLetraEspecifica(letra);
+        produtos.forEach(p -> System.out.println("Nome do produto: " + p.getNome()));
+    }
+    private void buscarPedidosFeitosEntreDuasDatas() {
+        System.out.println("Digite uma data no formato yyyy-MM-dd:");
+        String input1 = scan.nextLine();
+        LocalDate dataInicio = LocalDate.parse(input1);
+        System.out.println("Digite uma data no formato yyyy-MM-dd:");
+        String input2 = scan.nextLine();
+        LocalDate dataFim = LocalDate.parse(input2);
+        List<Pedido> pedidos = pedidoRepository.consultarPedidosFeitosEntreDuasDatas(dataInicio, dataFim);
+        pedidos.forEach(System.out::println);
+    }
+
+    private void buscarMediaPrecosProdutos() {
+        double media = produtoRepository.calcularMediaDosPrecosDosrodutos();
+        System.out.println("A média dos preços dos produtos é " + media);
+    }
+
+    private void buscarPrecoMaximoDeUmProdutoEmUmaCategoria() {
+        System.out.println("Digite uma categoria: ");
+        String categoria = scan.nextLine();
+        double precoMaximo = produtoRepository.encontrarPrecoMaximoDeUmProdutoEmUmaCategoria(categoria);
+        System.out.println("Produto com o maior preço: \n" + precoMaximo);
+    }
+
+    private void buscarNumeroDeProdutosPorCategoria() {
+        List<Object[]> resultado = produtoRepository.contarNumeroDeProdutosPorCategoria();
+        for (Object[] registro : resultado) {
+            String nomeCategoria = (String) registro[0];
+            Long quantidadeProdutos = (Long) registro[1];
+            System.out.println("Categoria: " + nomeCategoria + ", Quantidade de produtos: " + quantidadeProdutos);
+        }
+    }
+
+    private void buscarCategoriasComMais10Produtos() {
+        List<Object[]> resultadoBusca = produtoRepository.buscarCategoriasComMais10Produtos();
+        for (Object[] registro : resultadoBusca){
+            String nomeCategoria = (String) registro[0];
+            Long quantidadeProdutos = (Long) registro[1];
+            System.out.println("Categoria: " + nomeCategoria + ", Quantidade de produtos: " + quantidadeProdutos);
+        }
+    }
+
+    private void buscarProdutosFiltradosPorNomeOuCategoria() {
+        int selecao;
+        String nome = null;
+        String categoria = null;
+        do{
+            System.out.println("Digite '1' para filtrar por nome ou '2' para filtrar por categoria");
+             selecao = scan.nextInt();
+             scan.nextLine();
+        }while(selecao != 1 && selecao != 2);
+
+
+        if (selecao == 1) {
+            System.out.println("Digite uma nome: ");
+            nome = scan.nextLine();
+        }
+        if (selecao == 2) {
+            System.out.println("Digite uma categoria: ");
+            categoria = scan.nextLine();
+        }
+        List<Produto> produtos = produtoRepository.filtrarProdutosPorNomeOuCategoria(nome, categoria);
+        String filtro = (selecao == 1) ? "nome" : "categoria";
+        String valorFiltro = (selecao == 1) ? nome : categoria;
+        System.out.printf("Produtos com %s igual a '%s':%n", filtro, valorFiltro);
+        if (produtos.isEmpty()) {
+            System.out.println("Nenhum produto encontrado para o filtro aplicado.");
+        } else {
+            produtos.forEach(System.out::println);
+        }
+    }
+
+    private void buscarTop5ProdutosMaisCaros() {
+        List<Produto> produtos = produtoRepository.filtrarTop5ProdutosMaisCaros();
+        System.out.println("Top 5 produtos mais caros: ");
+        produtos.forEach(System.out::println);
+    }
+
 }
